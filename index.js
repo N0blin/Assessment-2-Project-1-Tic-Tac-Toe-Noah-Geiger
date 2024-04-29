@@ -78,7 +78,7 @@ class TicTacToe {
 
 
      // Play the game
-     play() {
+     async play() {
         const self = this; // to acces 'this' inside readline callbacks
         function askQuestion(question) {
             return new Promise((resolve)=> {
@@ -99,7 +99,7 @@ class TicTacToe {
         }
 
 
-        (async function gameLoop() {
+        async function gameLoop() {
             while (!self.winner) {
                 self.printBoard();
                 console.log(`Player ${self.currentPlayer}'s turn`);
@@ -114,9 +114,29 @@ class TicTacToe {
             } else {
                 console.log(`Player ${self.winner} wins!`);
             }
+
+            const restart = await askQuestion('Do you want to play again? (yes/no): ');
+            if (restart.toLowerCase().trim() === 'yes') {
+                self.reset();
+                await gameLoop();        
+            } else {
             self.rl.close();
-        })();
+            }
+        }
+
+        await gameLoop();
      }    
+
+     reset() {
+        this.Grid =[
+            [' ', ' ', ' '],
+            [' ', ' ', ' '],
+            [' ', ' ', ' ']
+        ];
+        this.currentPlayer = 'X';
+        this.winner = null;
+        this.moves = 0;
+     }
 }
 
 const game = new TicTacToe();
